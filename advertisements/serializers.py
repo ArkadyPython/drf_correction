@@ -31,13 +31,12 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if self.context["request"].method == 'POST':
-            if Advertisement.objects.filter(creator_id = self.context["request"].user, status='OPEN').count() <= 10:
+            if Advertisement.objects.filter(creator_id=self.context["request"].user, status='OPEN').count() <= 10:
                 return data
             else:
                 raise serializers.ValidationError('Пользователь имеет слишком много открытых объявлений')
-        if self.context["request"].method == 'PATCH' \
-                and Advertisement.objects.filter(creator_id = self.context["request"].user, status='OPEN').count() >= 1:
-            if Advertisement.objects.filter(creator_id = self.context["request"].user, status='OPEN').count() <= 10:
+        if self.context["request"].method == 'PATCH' and self.context["request"].status == 'OPEN':
+            if Advertisement.objects.filter(creator_id=self.context["request"].user, status='OPEN').count() <= 10:
                 return data
             else:
                 raise serializers.ValidationError('Пользователь имеет слишком много открытых объявлений')
